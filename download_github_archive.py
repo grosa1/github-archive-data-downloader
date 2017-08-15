@@ -102,15 +102,15 @@ if __name__ == '__main__':
                         dest='start_datetime',
                         required=True,
                         type=date_string,
-                        help='Date to start data collection in the format, "YYYY-MM-DD')
+                        help='Date to start data collection in the format, "YYYY-MM-DD".')
     parser.add_argument('--days', '-d',
                         type=int,
                         required=True,
-                        help='Number of days data, including the start date to download')
+                        help='Number of days data, including the start date to download.')
     parser.add_argument('--output-directory', '-o',
                         dest='output_directory',
                         default=DEFAULT_OUTPUT_DIRECTORY,
-                        help='The directory to save downloaded data (date directories, in the format YYYYMMDD, will be created)')
+                        help='The directory to save downloaded data (date directories, in the format YYYYMMDD, will be created).')
     parser.add_argument('--workers', '-w',
                         type=int,
                         default=DEFAULT_WORKERS,
