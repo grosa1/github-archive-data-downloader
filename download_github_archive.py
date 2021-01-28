@@ -3,8 +3,7 @@ Retrieve github archieve data from: https://www.githubarchive.org/
 """
 import os
 import datetime
-from concurrent.futures import ThreadPoolExecutor
-import requests
+import wget
 import pandas as pd
 
 import logging
@@ -44,18 +43,15 @@ def get_github_hourly_data(args):
                                                                   month=desired_hour_datetime.month,
                                                                   day=desired_hour_datetime.day,
                                                                   hour=desired_hour_datetime.hour)
+    
     logging.info(f'Downloading file for {filename}')
     gh_data_url = f'http://data.githubarchive.org/{filename}'
-    try:
-        response = requests.get(gh_data_url, stream=True)
-    except Exception as e:
-        logging.exception(e)
-
     output_filepath = os.path.join(date_directory_fullpath, filename)
     if not os.path.exists(output_filepath):
-        with open(output_filepath, 'wb') as out_json_gz:
-            for chunk in response.iter_content():
-                out_json_gz.write(chunk)
+        try:
+            wget.download(url, out=date_directory_fullpath)
+        except Exception as e:
+            logging.exception(e)
     else:
         logging.warning(f'FILE EXISTS, SKIPPING: {output_filepath}')
 
@@ -86,13 +82,14 @@ def collect_github_archive(initial_datetime, end_datetime, output_directory=DEFA
     :param end_datetime: (datetime) end datetime
     :return:
     """
-    with ThreadPoolExecutor(max_workers=workers) as executor:
-        datetime_hours = get_day_datetimes(initial_datetime, end_datetime)
-        args = [(d, output_directory) for d in datetime_hours]
-        results = executor.map(get_github_hourly_data, args)
-        return results
-
-
+   
+    datetime_hours = get_day_datetimes(initial_datetime, end_datetime)
+    for d in datetime_hours:
+        try:
+            get_github_hourly_data(d, output_directory)
+        except Exception as e:
+            logging.exception(e)
+            
 def date_string(s):
     """
     Date string parser that parses
