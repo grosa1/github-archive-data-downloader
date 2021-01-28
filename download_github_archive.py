@@ -5,6 +5,7 @@ import os
 import datetime
 from concurrent.futures import ThreadPoolExecutor
 import requests
+import pandas as pd
 
 DEFAULT_WORKERS = 10
 DEFAULT_OUTPUT_DIRECTORY = os.path.expanduser('~/github-archive-data')
@@ -27,8 +28,9 @@ def get_github_hourly_data(args):
             print(f'> Created: {output_root_directory}')
 
     # create date directory if it does not exist
-    date_directory = desired_hour_datetime.strftime('%Y%m%d')
-    date_directory_fullpath = os.path.join(output_root_directory, date_directory)
+    # date_directory = desired_hour_datetime.strftime('%Y%m%d')
+    # date_directory_fullpath = os.path.join(output_root_directory, date_directory)
+    date_directory_fullpath = os.path.join(output_root_directory)
     if not os.path.exists(date_directory_fullpath):
         os.mkdir(date_directory_fullpath)
         print(f'> Created: {date_directory_fullpath}')
@@ -53,30 +55,26 @@ def get_github_hourly_data(args):
     return gh_data_url, output_filepath
 
 
-def get_day_datetimes(start_datetime, total_days):
+def get_day_datetimes(start_datetime, end_datetime):
     """
     Datetime hour generator.
     Will generate the hourly datetime objects starting with the given 'start_datetime', up and until the number of days given.
     (only full days supported)
 
     :param start_datetime: (datetime) datetime (hour will be ignored)
-    :param total_days: (int) Number of days to generate
+    :param end_datetime: (datetime) datetime (hour will be ignored) Number of days to generate
     """
-    assert total_days >= 1
-    for days in range(total_days):
-        for hours in range(24):
-            yield start_datetime + datetime.timedelta(days=days, hours=hours)
+    return pd.date_range(start=start_datetime, end=end_datetime).to_pydatetime()
 
-
-def collect_github_archive(initial_datetime, days, output_directory=DEFAULT_OUTPUT_DIRECTORY, workers=DEFAULT_WORKERS):
+def collect_github_archive(initial_datetime, end_datetime, output_directory=DEFAULT_OUTPUT_DIRECTORY, workers=DEFAULT_WORKERS):
     """
     Download github archive data in parallel with a thread pool.
     :param initial_datetime: (datetime) initial datetime
-    :param days: (int) number of days to download data for
+    :param end_datetime: (datetime) end datetime
     :return:
     """
     with ThreadPoolExecutor(max_workers=workers) as executor:
-        datetime_hours = get_day_datetimes(initial_datetime, days)
+        datetime_hours = get_day_datetimes(initial_datetime, end_datetime)
         args = [(d, output_directory) for d in datetime_hours]
         results = executor.map(get_github_hourly_data, args)
         return results
@@ -103,10 +101,11 @@ if __name__ == '__main__':
                         required=True,
                         type=date_string,
                         help='Date to start data collection in the format, "YYYY-MM-DD".')
-    parser.add_argument('--days', '-d',
-                        type=int,
+    parser.add_argument('--end-date', '-e',
+                        dest='end_datetime',
                         required=True,
-                        help='Number of days data, including the start date to download.')
+                        type=date_string,
+                        help='Date to end data collection in the format, "YYYY-MM-DD".')
     parser.add_argument('--output-directory', '-o',
                         dest='output_directory',
                         default=DEFAULT_OUTPUT_DIRECTORY,
@@ -118,10 +117,10 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     print(f'START-DATE: {args.start_datetime}')
-    print(f'DAYS: {args.days}')
+    print(f'END-DATE: {args.end_datetime}')
     print(f'OUTPUT-DIRECTORY: {args.output_directory}')
     print(f'WORKERS: {args.workers}')
-    results = collect_github_archive(args.start_datetime, args.days, args.output_directory, args.workers)
+    results = collect_github_archive(args.start_datetime, args.end_datetime, args.output_directory, args.workers)
     for url, local_filepath in results:
         print(url, local_filepath)
 
