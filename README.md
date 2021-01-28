@@ -20,9 +20,11 @@ optional arguments:
                         Date to end data collection in the format, "YYYY-MM-DD"
   --output-directory OUTPUT_DIRECTORY, -o OUTPUT_DIRECTORY
                         The directory to save downloaded data
+  ```
+<!--               
   --workers WORKERS, -w WORKERS
                         Number of workers to use to download in parallel.
-```
+-->
 
 Example:
 ```
