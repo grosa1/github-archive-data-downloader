@@ -8,9 +8,9 @@ import requests
 import pandas as pd
 
 import logging
-logging.basicConfig(format='%(asctime)s %(message)s : ', datefmt='%m/%d/%Y %I:%M:%S %p')
+logging.basicConfig(level=logging.INFO, format='%(asctime)s :: %(levelname)s :: %(message)s')
 
-DEFAULT_WORKERS = 10
+DEFAULT_WORKERS = 4
 DEFAULT_OUTPUT_DIRECTORY = os.path.expanduser('~/github-archive-data')
 
 
