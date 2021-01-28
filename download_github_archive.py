@@ -48,14 +48,9 @@ def get_github_hourly_data(args):
     gh_data_url = f'http://data.githubarchive.org/{filename}'
     output_filepath = os.path.join(date_directory_fullpath, filename)
     if not os.path.exists(output_filepath):
-        try:
-            wget.download(gh_data_url, out=date_directory_fullpath)
-        except Exception as e:
-            logging.exception(e)
+            os.system(f'wget {gh_data_url} -P {date_directory_fullpath}')
     else:
         logging.warning(f'FILE EXISTS, SKIPPING: {output_filepath}')
-
-    return gh_data_url, output_filepath
 
 
 def get_day_datetimes(start_datetime, end_datetime):
