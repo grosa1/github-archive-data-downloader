@@ -86,7 +86,7 @@ def collect_github_archive(initial_datetime, end_datetime, output_directory=DEFA
     datetime_hours = get_day_datetimes(initial_datetime, end_datetime)
     for d in datetime_hours:
         try:
-            get_github_hourly_data(d, output_directory)
+            get_github_hourly_data((d, output_directory))
         except Exception as e:
             logging.exception(e)
             
@@ -120,16 +120,16 @@ if __name__ == '__main__':
                         dest='output_directory',
                         default=DEFAULT_OUTPUT_DIRECTORY,
                         help='The directory to save downloaded data (date directories, in the format YYYYMMDD, will be created).')
-    parser.add_argument('--workers', '-w',
-                        type=int,
-                        default=DEFAULT_WORKERS,
-                        help='Number of workers to use to download in parallel.')
+#     parser.add_argument('--workers', '-w',
+#                         type=int,
+#                         default=DEFAULT_WORKERS,
+#                         help='Number of workers to use to download in parallel.')
     args = parser.parse_args()
 
     print(f'START-DATE: {args.start_datetime}')
     print(f'END-DATE: {args.end_datetime}')
     print(f'OUTPUT-DIRECTORY: {args.output_directory}')
-    print(f'WORKERS: {args.workers}')
+#     print(f'WORKERS: {args.workers}')
     results = collect_github_archive(args.start_datetime, args.end_datetime, args.output_directory, args.workers)
     for url, local_filepath in results:
         print(url, local_filepath)
