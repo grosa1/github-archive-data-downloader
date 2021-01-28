@@ -71,7 +71,9 @@ def get_day_datetimes(start_datetime, end_datetime):
     :param start_datetime: (datetime) datetime (hour will be ignored)
     :param end_datetime: (datetime) datetime (hour will be ignored) Number of days to generate
     """
-    return pd.date_range(start=start_datetime, end=end_datetime).to_pydatetime()
+    for d in pd.date_range(start=start_datetime, end=end_datetime).to_pydatetime():
+       for hours in range(24):
+           yield d + datetime.timedelta(hours=hours)
 
 def collect_github_archive(initial_datetime, end_datetime, output_directory=DEFAULT_OUTPUT_DIRECTORY, workers=DEFAULT_WORKERS):
     """
