@@ -7,6 +7,9 @@ from concurrent.futures import ThreadPoolExecutor
 import requests
 import pandas as pd
 
+import logging
+logging.basicConfig(format='%(asctime)s %(message)s : ', datefmt='%m/%d/%Y %I:%M:%S %p')
+
 DEFAULT_WORKERS = 10
 DEFAULT_OUTPUT_DIRECTORY = os.path.expanduser('~/github-archive-data')
 
@@ -41,8 +44,12 @@ def get_github_hourly_data(args):
                                                                   month=desired_hour_datetime.month,
                                                                   day=desired_hour_datetime.day,
                                                                   hour=desired_hour_datetime.hour)
+    logging.info(f'Downloading file for {filename}')
     gh_data_url = f'http://data.githubarchive.org/{filename}'
-    response = requests.get(gh_data_url, stream=True)
+    try:
+        response = requests.get(gh_data_url, stream=True)
+    except Exception as e:
+        logging.exception(e)
 
     output_filepath = os.path.join(date_directory_fullpath, filename)
     if not os.path.exists(output_filepath):
@@ -50,7 +57,7 @@ def get_github_hourly_data(args):
             for chunk in response.iter_content():
                 out_json_gz.write(chunk)
     else:
-        print(f'FILE EXISTS, SKIPPING: {output_filepath}')
+        logging.warning(f'FILE EXISTS, SKIPPING: {output_filepath}')
 
     return gh_data_url, output_filepath
 
