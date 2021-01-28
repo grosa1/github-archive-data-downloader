@@ -26,5 +26,5 @@ optional arguments:
 
 Example:
 ```
-python download_github_archive.py --start-date 2017-4-1 --days 1
+python download_github_archive.py --start-date 2020-4-1 --end-date 2020-5-31
 ```
