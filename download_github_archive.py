@@ -130,7 +130,7 @@ if __name__ == '__main__':
     print(f'END-DATE: {args.end_datetime}')
     print(f'OUTPUT-DIRECTORY: {args.output_directory}')
 #     print(f'WORKERS: {args.workers}')
-    results = collect_github_archive(args.start_datetime, args.end_datetime, args.output_directory, args.workers)
+    results = collect_github_archive(args.start_datetime, args.end_datetime, args.output_directory, 0)
     for url, local_filepath in results:
         print(url, local_filepath)
 
