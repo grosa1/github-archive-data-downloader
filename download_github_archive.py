@@ -49,7 +49,7 @@ def get_github_hourly_data(args):
     output_filepath = os.path.join(date_directory_fullpath, filename)
     if not os.path.exists(output_filepath):
         try:
-            wget.download(url, out=date_directory_fullpath)
+            wget.download(gh_data_url, out=date_directory_fullpath)
         except Exception as e:
             logging.exception(e)
     else:
